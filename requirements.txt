@@ -1,1 +1,5 @@
-hhh
+streamlit
+requests
+pandas
+sqlite3
+geopy
