@@ -1,34 +1,38 @@
 import sqlite3
 
-def init_db():
-    conn = sqlite3.connect("weather_data.db")
-    c = conn.cursor()
-    c.execute('''
+def create_connection(db_file="weather_data.db"):
+    conn = sqlite3.connect(db_file)
+    return conn
+
+def create_table():
+    conn = create_connection()
+    cursor = conn.cursor()
+    cursor.execute('''
         CREATE TABLE IF NOT EXISTS weather (
             id INTEGER PRIMARY KEY AUTOINCREMENT,
             city TEXT,
             temperature REAL,
             windspeed REAL,
-            time TEXT
+            timestamp DATETIME DEFAULT CURRENT_TIMESTAMP
         )
     ''')
     conn.commit()
     conn.close()
 
-def add_weather_data(city, temperature, windspeed, time):
-    conn = sqlite3.connect("weather_data.db")
-    c = conn.cursor()
-    c.execute('''
-        INSERT INTO weather (city, temperature, windspeed, time)
-        VALUES (?, ?, ?, ?)
-    ''', (city, temperature, windspeed, time))
+def insert_weather_data(city, temperature, windspeed):
+    conn = create_connection()
+    cursor = conn.cursor()
+    cursor.execute('''
+        INSERT INTO weather (city, temperature, windspeed)
+        VALUES (?, ?, ?)
+    ''', (city, temperature, windspeed))
     conn.commit()
     conn.close()
 
-def get_all_data():
-    conn = sqlite3.connect("weather_data.db")
-    c = conn.cursor()
-    c.execute("SELECT * FROM weather")
-    rows = c.fetchall()
+def fetch_all_data():
+    conn = create_connection()
+    cursor = conn.cursor()
+    cursor.execute("SELECT * FROM weather ORDER BY timestamp DESC")
+    rows = cursor.fetchall()
     conn.close()
     return rows
