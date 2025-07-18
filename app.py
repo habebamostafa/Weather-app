@@ -7,9 +7,10 @@ st.set_page_config(page_title="🌦️ Weather Tracker by [Your Name]", layout="
 
 create_table()
 st.title("🌤️ Weather Tracker App")
-st.info("Created by [Your Name] | Info: PM Accelerator trains future PMs → [Product Manager Accelerator](https://www.linkedin.com/company/product-manager-accelerator/)")
+st.info("Created by Habeba Mostafa | Info: PM Accelerator trains future PMs → [Product Manager Accelerator]")
+input_type = st.selectbox("🗺️ اختر نوع الإدخال:", ["اسم المدينة", "Zip Code / Postal Code", "GPS Coordinates", "Landmark / معلم"])
 
-city_name = st.text_input("أدخل اسم المدينة:")
+city_name = st.text_input("📍 أدخل الموقع:", placeholder="مثال: Cairo أو 12345 أو 30.0444, 31.2357 أو برج خليفة")
 
 if st.button("احصل على الطقس"):
     if city_name.strip() == "":
