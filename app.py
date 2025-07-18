@@ -24,17 +24,21 @@ if city_input:
         st.error("❌ Could not find location coordinates.")
         st.stop()
 
-    st.subheader("on Map")
-    map_ = folium.Map(location=[lat, lon], zoom_start=10)
-    folium.Marker([lat, lon], tooltip=city_name.title()).add_to(map_)
-    st_data = st_folium(map_, width=700, height=500)
+    col1, col2 = st.columns([1, 1.2])
 
-    if city_name and temp is not None:
-        st.subheader(f"🌡️ Current Weather in {city_name}")
-        st.write(f"**Temperature:** {temp} °C")
-        st.write(f"**Wind Speed:** {wind} km/h")
-    else:
-        st.error("❌ Couldn't retrieve current weather. Please check your input.")
+    with col1:
+        st.subheader("🗺️ Location on Map")
+        map_ = folium.Map(location=[lat, lon], zoom_start=10)
+        folium.Marker([lat, lon], tooltip=city_name.title()).add_to(map_)
+        st_data = st_folium(map_, width=350, height=350)
+
+    with col2:
+        if city_name and temp is not None:
+            st.subheader(f"🌡️ Current Weather in {city_name}")
+            st.metric("Temperature (°C)", f"{temp}°C")
+            st.metric("Wind Speed (km/h)", f"{wind} km/h")
+        else:
+            st.error("❌ Couldn't retrieve current weather.")
 
     if forecast_df is not None:
         st.subheader(f"📅 5-Day Forecast for {forecast_df['City'][0]}")
