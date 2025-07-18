@@ -2,7 +2,8 @@ import streamlit as st
 import pandas as pd
 from db import create_table, insert_weather_data, fetch_all_data, update_record, delete_record
 from weather_util import get_coordinates, get_weather, get_forecast
-
+from streamlit_folium import st_folium
+import folium
 st.set_page_config(page_title="🌦️ Weather Tracker by Habeba Mostafa", layout="centered")
 
 create_table()
@@ -16,6 +17,18 @@ if city_input:
     city_name, temp, wind = get_weather(city_input)
     forecast_df = get_forecast(city_input)
 
+    coords = get_coordinates(city_input)
+    if coords:
+        lat, lon = coords
+    else:
+        st.error("❌ Could not find location coordinates.")
+        st.stop()
+
+    st.subheader("🌍 موقع المدينة على الخريطة")
+    map_ = folium.Map(location=[lat, lon], zoom_start=10)
+    folium.Marker([lat, lon], tooltip=city_name.title()).add_to(map_)
+    st_data = st_folium(map_, width=700, height=500)
+
     if city_name and temp is not None:
         st.subheader(f"🌡️ Current Weather in {city_name}")
         st.write(f"**Temperature:** {temp} °C")
@@ -26,6 +39,7 @@ if city_input:
     if forecast_df is not None:
         st.subheader(f"📅 5-Day Forecast for {forecast_df['City'][0]}")
         st.dataframe(forecast_df)
+    
     else:
         st.error("❌ Couldn't retrieve forecast data.")
 
