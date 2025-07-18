@@ -29,6 +29,10 @@ def get_weather(city_name):
     return None, None, None
 
 def get_forecast(lat, lon):
+    if lat is None:
+        return None, None, None  # Invalid city
+    if lon is None:
+        return None, None, None  # Invalid cityif lat is None:
     url = f"https://api.open-meteo.com/v1/forecast?latitude={lat}&longitude={lon}&daily=temperature_2m_max,temperature_2m_min&timezone=auto"
     r = requests.get(url)
     if r.status_code == 200:
