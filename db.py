@@ -1,5 +1,22 @@
 import sqlite3
 
+def init_db():
+    conn = sqlite3.connect("weather_data.db")
+    cursor = conn.cursor()
+    cursor.execute('''
+        CREATE TABLE IF NOT EXISTS weather (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            city TEXT,
+            temperature REAL,
+            weather_description TEXT,
+            windspeed REAL,
+            timestamp TEXT
+        )
+    ''')
+    conn.commit()
+    conn.close()
+
+
 def create_connection(db_file="weather_data.db"):
     conn = sqlite3.connect(db_file)
     return conn
