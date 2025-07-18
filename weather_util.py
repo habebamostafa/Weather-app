@@ -1,14 +1,28 @@
 import requests
 import pandas as pd
 
-def get_coordinates(city_name):
-    url = f"https://geocoding-api.open-meteo.com/v1/search?name={city_name}&count=1"
+def get_coordinates(location_input):
+    location_input = location_input.strip()
+
+    # محاولة فك الإحداثيات: "30.0444, 31.2357"
+    if "," in location_input:
+        try:
+            lat_str, lon_str = location_input.split(",")
+            lat = float(lat_str.strip())
+            lon = float(lon_str.strip())
+            return lat, lon, f"Coordinates ({lat},{lon})"
+        except ValueError:
+            pass
+
+    # استخدام API الجغرافي للبحث باسم أو رمز بريدي أو معلم
+    url = f"https://geocoding-api.open-meteo.com/v1/search?name={location_input}&count=1"
     response = requests.get(url)
     if response.status_code == 200:
         data = response.json()
         if "results" in data and len(data["results"]) > 0:
             result = data["results"][0]
             return result["latitude"], result["longitude"], result["name"]
+
     return None, None, None
 
 
@@ -26,10 +40,10 @@ def get_weather(city_name):
         return validated_city, temperature, windspeed
     return None, None, None
 
-def get_forecast(city_name):
-    lat, lon, validated_city = get_coordinates(city_name)
+def get_forecast(location_input):
+    lat, lon, validated_location = get_coordinates(location_input)
     if lat is None or lon is None:
-        return None  # مدينة غير صالحة
+        return None  # إدخال غير صالح
     
     url = (
         f"https://api.open-meteo.com/v1/forecast?"
@@ -46,7 +60,7 @@ def get_forecast(city_name):
                 "Max Temperature (°C)": daily["temperature_2m_max"],
                 "Min Temperature (°C)": daily["temperature_2m_min"]
             })
-            df.insert(0, "City", validated_city)
+            df.insert(0, "Location", validated_location)
             return df.head(5)
     
     return None  # فشل في جلب البيانات
