@@ -64,3 +64,15 @@ def alter_table_add_timestamp():
         # العمود موجود بالفعل
         pass
     conn.close()
+def update_record(record_id, new_temp):
+    conn = create_connection()
+    c = conn.cursor()
+    c.execute("UPDATE weather SET temperature = ? WHERE id = ?", (new_temp, record_id))
+    conn.commit()
+    conn.close()
+def delete_record(record_id):
+    conn = create_connection()
+    c = conn.cursor()
+    c.execute("DELETE FROM weather WHERE id = ?", (record_id,))
+    conn.commit()
+    conn.close()
