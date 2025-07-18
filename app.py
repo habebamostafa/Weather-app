@@ -24,7 +24,7 @@ if city_input:
         st.error("❌ Could not find location coordinates.")
         st.stop()
 
-    st.subheader("🌍 موقع المدينة على الخريطة")
+    st.subheader("on Map")
     map_ = folium.Map(location=[lat, lon], zoom_start=10)
     folium.Marker([lat, lon], tooltip=city_name.title()).add_to(map_)
     st_data = st_folium(map_, width=700, height=500)
