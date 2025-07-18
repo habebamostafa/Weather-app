@@ -23,7 +23,7 @@ if st.button("احصل على الطقس"):
             st.error("❌ لا توجد مدينة بهذا الاسم. حاول مرة أخرى.")
         
 if st.button("📆 عرض توقعات 5 أيام"):
-    lat, lon = get_coordinates(city)
+    lat, lon = get_coordinates(city_name)
     if lat and lon:
         forecast_df = get_forecast(lat, lon)
         st.dataframe(forecast_df)
