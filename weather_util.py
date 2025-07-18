@@ -14,7 +14,7 @@ def get_coordinates(city_name):
 
 def get_weather(city_name):
     lat, lon, validated_city = get_coordinates(city_name)
-    if lat is None:
+    if (lat |lon )is None:
         return None, None, None  # Invalid city
     url = f"https://api.open-meteo.com/v1/forecast?latitude={lat}&longitude={lon}&current_weather=true"
     response = requests.get(url)
