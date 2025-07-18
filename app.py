@@ -39,39 +39,6 @@ def process_input(input_type, user_input):
     else:
         return user_input
 
-# --- Get Weather Button ---
-if st.button("🌡️ Get Current Weather"):
-    if city_input.strip() == "":
-        st.warning("Please enter a valid input.")
-    else:
-        location_query = process_input(input_type, city_input)
-        if location_query:
-            city, temperature, windspeed = get_weather(location_query)
-            if city:
-                insert_weather_data(city, temperature, windspeed)
-                st.success(f"📍 City: {city}\n\n🌡️ Temperature: {temperature}°C\n💨 Wind Speed: {windspeed} km/h")
-            else:
-                st.error("❌ Could not fetch weather for the provided input.")
-        else:
-            st.error("❌ Could not geocode the input.")
-
-# --- Forecast Button ---
-if st.button("📆 Show 5-Day Forecast"):
-    if city_input.strip() == "":
-        st.warning("Please enter a valid input.")
-    else:
-        location_query = process_input(input_type, city_input)
-        if location_query:
-            forecast_df = get_forecast(location_query)
-            if forecast_df is not None and not forecast_df.empty:
-                st.subheader(f"📅 5-Day Forecast for {forecast_df['City'][0]}")
-                st.dataframe(forecast_df)
-                st.download_button("📥 Download CSV", forecast_df.to_csv(index=False), "5_day_forecast.csv", "text/csv")
-            else:
-                st.error("❌ Failed to fetch forecast.")
-        else:
-            st.error("❌ Could not geocode the input.")
-
 # --- Data Management Section ---
 st.markdown("---")
 st.subheader("📚 Manage Weather Records")
