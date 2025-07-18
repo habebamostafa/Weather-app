@@ -1,13 +1,23 @@
 import requests
 import pandas as pd
 
-def get_coordinates(city):
-    url = f"https://nominatim.openstreetmap.org/search?q={city}&format=json&limit=1"
-    r = requests.get(url, headers={"User-Agent": "weather-app"})
-    if r.status_code == 200 and r.json():
-        data = r.json()[0]
-        return float(data['lat']), float(data['lon'])
-    return None, None
+def get_coordinates(city_name):
+    url = f"https://nominatim.openstreetmap.org/search?city={city_name}&format=json&limit=1"
+    headers = {"User-Agent": "weather-app"}
+    response = requests.get(url, headers=headers)
+
+    if response.status_code == 200:
+        data = response.json()
+        if len(data) > 0 and "lat" in data[0] and "lon" in data[0]:
+            latitude = float(data[0]["lat"])
+            longitude = float(data[0]["lon"])
+            display_name = data[0]["display_name"]
+            return latitude, longitude, display_name
+        else:
+            return None, None, None
+    else:
+        return None, None, None
+
 
 def get_weather(lat, lon):
     url = f"https://api.open-meteo.com/v1/forecast?latitude={lat}&longitude={lon}&current_weather=true"

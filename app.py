@@ -12,19 +12,19 @@ st.info("Created by [Your Name] | Info: PM Accelerator trains future PMs → [Pr
 city = st.text_input("أدخل اسم المدينة (أو موقع آخر)")
 
 if st.button("📍 جلب الطقس الحالي"):
-    lat, lon = get_coordinates(city)
-    if lat and lon:
-        temperature, windspeed = get_weather(lat, lon)
-        if temperature:
-            insert_weather_data(city, temperature, windspeed)
-            st.success(f"✔ الطقس الحالي لـ {city}")
-            st.write(f"🌡️ درجة الحرارة: {temperature}°C")
-            st.write(f"💨 سرعة الرياح: {windspeed} كم/س")
-        else:
-            st.error("⚠️ فشل في جلب الطقس")
+    latitude, longitude, location_name = get_coordinates(city)
+    if latitude is None or longitude is None:
+        st.error("❌ المدينة غير موجودة. من فضلك أدخل اسم مدينة صحيح.")
     else:
-        st.error("⚠️ لم يتم العثور على الموقع")
-
+            temperature, windspeed = get_weather(latitude, longitude)
+            if temperature:
+                insert_weather_data(city, temperature, windspeed)
+                st.success(f"✔ الطقس الحالي لـ {city}")
+                st.write(f"🌡️ درجة الحرارة: {temperature}°C")
+                st.write(f"💨 سرعة الرياح: {windspeed} كم/س")
+            else:
+                st.error("⚠️ فشل في جلب الطقس")
+        
 if st.button("📆 عرض توقعات 5 أيام"):
     lat, lon = get_coordinates(city)
     if lat and lon:
