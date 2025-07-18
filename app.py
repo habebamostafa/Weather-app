@@ -9,21 +9,18 @@ create_table()
 st.title("🌤️ Weather Tracker App")
 st.info("Created by [Your Name] | Info: PM Accelerator trains future PMs → [Product Manager Accelerator](https://www.linkedin.com/company/product-manager-accelerator/)")
 
-city = st.text_input("أدخل اسم المدينة (أو موقع آخر)")
+city_name = st.text_input("أدخل اسم المدينة:")
 
-if st.button("📍 جلب الطقس الحالي"):
-    latitude, longitude, location_name = get_coordinates(city)
-    if latitude is None or longitude is None:
-        st.error("❌ المدينة غير موجودة. من فضلك أدخل اسم مدينة صحيح.")
+if st.button("احصل على الطقس"):
+    if city_name.strip() == "":
+        st.warning("من فضلك أدخل اسم مدينة.")
     else:
-            temperature, windspeed = get_weather(latitude, longitude)
-            if temperature:
-                insert_weather_data(city, temperature, windspeed)
-                st.success(f"✔ الطقس الحالي لـ {city}")
-                st.write(f"🌡️ درجة الحرارة: {temperature}°C")
-                st.write(f"💨 سرعة الرياح: {windspeed} كم/س")
-            else:
-                st.error("⚠️ فشل في جلب الطقس")
+        city, temperature, windspeed = get_weather(city_name)
+        if city:
+            insert_weather_data(city, temperature, windspeed)
+            st.success(f"📍 المدينة: {city}\n\n🌡️ درجة الحرارة: {temperature}°C\n💨 سرعة الرياح: {windspeed} km/h")
+        else:
+            st.error("❌ لا توجد مدينة بهذا الاسم. حاول مرة أخرى.")
         
 if st.button("📆 عرض توقعات 5 أيام"):
     lat, lon = get_coordinates(city)
@@ -39,7 +36,7 @@ st.subheader("📚 إدارة البيانات")
 
 rows = fetch_all_data()
 if rows:
-    df = pd.DataFrame(rows, columns=["ID", "City", "Temperature", "Wind Speed", "Timestamp"])
+    df = pd.DataFrame(rows, columns=["ID", "المدينة", "درجة الحرارة", "سرعة الرياح", "الوقت"])
     st.dataframe(df)
     export = st.radio("تنزيل البيانات بصيغة", ("CSV", "JSON"))
     if export == "CSV":

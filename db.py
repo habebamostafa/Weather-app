@@ -1,23 +1,25 @@
 import sqlite3
+from datetime import datetime
+
+DB_NAME = "weather_data.db"
 
 def init_db():
-    conn = sqlite3.connect("weather_data.db")
+    conn = sqlite3.connect(DB_NAME)
     cursor = conn.cursor()
-    cursor.execute('''
+    cursor.execute("""
         CREATE TABLE IF NOT EXISTS weather (
             id INTEGER PRIMARY KEY AUTOINCREMENT,
-            city TEXT,
-            temperature REAL,
-            weather_description TEXT,
-            windspeed REAL,
-            timestamp TEXT
+            city TEXT NOT NULL,
+            temperature REAL NOT NULL,
+            windspeed REAL NOT NULL,
+            timestamp TEXT NOT NULL
         )
-    ''')
+    """)
     conn.commit()
     conn.close()
 
 
-def create_connection(db_file="weather_data.db"):
+def create_connection(db_file=DB_NAME):
     conn = sqlite3.connect(db_file)
     return conn
 
@@ -37,12 +39,11 @@ def create_table():
     conn.close()
 
 def insert_weather_data(city, temperature, windspeed):
-    conn = create_connection()
+    conn = sqlite3.connect(DB_NAME)
     cursor = conn.cursor()
-    cursor.execute('''
-        INSERT INTO weather (city, temperature, windspeed)
-        VALUES (?, ?, ?)
-    ''', (city, temperature, windspeed))
+    timestamp = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+    cursor.execute("INSERT INTO weather (city, temperature, windspeed, timestamp) VALUES (?, ?, ?, ?)",
+                   (city, temperature, windspeed, timestamp))
     conn.commit()
     conn.close()
 
