@@ -62,7 +62,6 @@ def alter_table_add_timestamp():
         cursor.execute("ALTER TABLE weather ADD COLUMN timestamp DATETIME DEFAULT CURRENT_TIMESTAMP")
         conn.commit()
     except sqlite3.OperationalError:
-        # العمود موجود بالفعل
         pass
     conn.close()
 def update_record(record_id, new_temp):
