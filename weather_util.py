@@ -2,7 +2,6 @@ import requests
 import pandas as pd
 import streamlit as st
 
-# ترجمة الإحداثيات إلى اسم مدينة باستخدام reverse geocoding
 def reverse_geocode(lat, lon):
     url = f"https://geocoding-api.open-meteo.com/v1/reverse?latitude={lat}&longitude={lon}"
     response = requests.get(url)
@@ -12,7 +11,6 @@ def reverse_geocode(lat, lon):
             return data["results"][0]["name"]
     return f"{lat},{lon}"  # fallback
 
-# تحويل الإدخال إلى إحداثيات
 def get_coordinates(city_input):
     if "," in city_input:
         try:
@@ -30,7 +28,6 @@ def get_coordinates(city_input):
                 result = data["results"][0]
                 return result["latitude"], result["longitude"], result["name"]
     return None, None, None
-
 
 def get_weather(city_input):
     lat, lon, validated_city = get_coordinates(city_input)

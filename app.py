@@ -19,7 +19,7 @@ if city_input:
 
     coords = get_coordinates(city_input)
     if coords:
-        lat, lon = coords
+        lat, lon,_ = coords
     else:
         st.error("❌ Could not find location coordinates.")
         st.stop()
