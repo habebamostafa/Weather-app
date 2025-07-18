@@ -1,23 +1,27 @@
 import requests
 import pandas as pd
 
+import requests
+
+REVERSE_GEOCODE_API = "https://nominatim.openstreetmap.org/reverse"
+
 def get_coordinates(location_input):
     location_input = location_input.strip()
 
-    # Detect if input is coordinates: "30.0444, 31.2357"
     if "," in location_input:
-        try:
-            lat_str, lon_str = location_input.split(",")
-            lat = float(lat_str.strip())
-            lon = float(lon_str.strip())
-            return lat, lon, f"Coordinates ({lat},{lon})"
-        except ValueError:
-            pass  # Try next method
+        parts = location_input.split(",")
+        if len(parts) == 2:
+            try:
+                lat = float(parts[0].strip())
+                lon = float(parts[1].strip())
+                if -90 <= lat <= 90 and -180 <= lon <= 180:
+                    place_name = get_place_name_from_coordinates(lat, lon)
+                    return lat, lon, place_name or f"Coordinates ({lat},{lon})"
+            except ValueError:
+                pass
 
-    # Use Open-Meteo geocoding API to search by name, zip code, landmark, town, city, etc.
     url = f"https://geocoding-api.open-meteo.com/v1/search?name={location_input}&count=1"
     response = requests.get(url)
-
     if response.status_code == 200:
         data = response.json()
         if "results" in data and len(data["results"]) > 0:
@@ -26,6 +30,21 @@ def get_coordinates(location_input):
 
     return None, None, None
 
+
+def get_place_name_from_coordinates(lat, lon):
+    try:
+        response = requests.get(REVERSE_GEOCODE_API, params={
+            "format": "json",
+            "lat": lat,
+            "lon": lon
+        }, headers={"User-Agent": "weather-app"})
+        
+        if response.status_code == 200:
+            data = response.json()
+            return data.get("display_name")
+    except Exception as e:
+        print("Error in reverse geocoding:", e)
+    return None
 
 def get_weather(location_input):
     lat, lon, validated_location = get_coordinates(location_input)
