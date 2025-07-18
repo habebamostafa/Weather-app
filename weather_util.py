@@ -4,7 +4,7 @@ import pandas as pd
 def get_coordinates(location_input):
     location_input = location_input.strip()
 
-    # محاولة فك الإحداثيات: "30.0444, 31.2357"
+    # Detect if input is coordinates: "30.0444, 31.2357"
     if "," in location_input:
         try:
             lat_str, lon_str = location_input.split(",")
@@ -12,11 +12,12 @@ def get_coordinates(location_input):
             lon = float(lon_str.strip())
             return lat, lon, f"Coordinates ({lat},{lon})"
         except ValueError:
-            pass
+            pass  # Try next method
 
-    # استخدام API الجغرافي للبحث باسم أو رمز بريدي أو معلم
+    # Use Open-Meteo geocoding API to search by name, zip code, landmark, town, city, etc.
     url = f"https://geocoding-api.open-meteo.com/v1/search?name={location_input}&count=1"
     response = requests.get(url)
+
     if response.status_code == 200:
         data = response.json()
         if "results" in data and len(data["results"]) > 0:
@@ -26,10 +27,11 @@ def get_coordinates(location_input):
     return None, None, None
 
 
-def get_weather(city_name):
-    lat, lon, validated_city = get_coordinates(city_name)
+def get_weather(location_input):
+    lat, lon, validated_location = get_coordinates(location_input)
     if lat is None or lon is None:
-        return None ,None,None
+        return None, None, None
+
     url = f"https://api.open-meteo.com/v1/forecast?latitude={lat}&longitude={lon}&current_weather=true"
     response = requests.get(url)
     if response.status_code == 200:
@@ -37,20 +39,21 @@ def get_weather(city_name):
         weather = data["current_weather"]
         temperature = weather["temperature"]
         windspeed = weather["windspeed"]
-        return validated_city, temperature, windspeed
+        return validated_location, temperature, windspeed
     return None, None, None
+
 
 def get_forecast(location_input):
     lat, lon, validated_location = get_coordinates(location_input)
     if lat is None or lon is None:
-        return None  # إدخال غير صالح
-    
+        return None  # Invalid input
+
     url = (
         f"https://api.open-meteo.com/v1/forecast?"
         f"latitude={lat}&longitude={lon}&daily=temperature_2m_max,temperature_2m_min&timezone=auto"
     )
     response = requests.get(url)
-    
+
     if response.status_code == 200:
         data = response.json()
         daily = data.get("daily", {})
@@ -62,5 +65,5 @@ def get_forecast(location_input):
             })
             df.insert(0, "Location", validated_location)
             return df.head(5)
-    
-    return None  # فشل في جلب البيانات
+
+    return None
