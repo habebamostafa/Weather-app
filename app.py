@@ -10,8 +10,24 @@ st.title("🌤️ Weather Tracker App")
 st.info("Created by Habeba Mostafa | Info: PM Accelerator trains future PMs → [Product Manager Accelerator]")
 
 input_type = st.selectbox("🗺️ Select input type:", ["City Name", "Zip Code / Postal Code", "GPS Coordinates", "Landmark"])
+city_input = st.text_input("Enter a city name or coordinates (lat,lon):", value="Cairo")
 
-user_input = st.text_input("📍 Enter location:", placeholder="e.g., Cairo or 12345 or 30.0444,31.2357 or Burj Khalifa")
+if city_input:
+    city_name, temp, wind = get_weather(city_input)
+    forecast_df = get_forecast(city_input)
+
+    if city_name and temp is not None:
+        st.subheader(f"🌡️ Current Weather in {city_name}")
+        st.write(f"**Temperature:** {temp} °C")
+        st.write(f"**Wind Speed:** {wind} km/h")
+    else:
+        st.error("❌ Couldn't retrieve current weather. Please check your input.")
+
+    if forecast_df is not None:
+        st.subheader(f"📅 5-Day Forecast for {forecast_df['City'][0]}")
+        st.dataframe(forecast_df)
+    else:
+        st.error("❌ Couldn't retrieve forecast data.")
 
 def process_input(input_type, user_input):
     if input_type in ["Landmark", "GPS Coordinates"]:
@@ -25,10 +41,10 @@ def process_input(input_type, user_input):
 
 # --- Get Weather Button ---
 if st.button("🌡️ Get Current Weather"):
-    if user_input.strip() == "":
+    if city_input.strip() == "":
         st.warning("Please enter a valid input.")
     else:
-        location_query = process_input(input_type, user_input)
+        location_query = process_input(input_type, city_input)
         if location_query:
             city, temperature, windspeed = get_weather(location_query)
             if city:
@@ -41,10 +57,10 @@ if st.button("🌡️ Get Current Weather"):
 
 # --- Forecast Button ---
 if st.button("📆 Show 5-Day Forecast"):
-    if user_input.strip() == "":
+    if city_input.strip() == "":
         st.warning("Please enter a valid input.")
     else:
-        location_query = process_input(input_type, user_input)
+        location_query = process_input(input_type, city_input)
         if location_query:
             forecast_df = get_forecast(location_query)
             if forecast_df is not None and not forecast_df.empty:
