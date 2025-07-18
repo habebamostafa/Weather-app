@@ -26,17 +26,13 @@ if st.button("📆 عرض توقعات 5 أيام"):
     if city_name.strip() == "":
         st.warning("من فضلك أدخل اسم مدينة.")
     else:
-        lat, lon, validated_city = get_coordinates(city_name)
-        if lat is not None and lon is not None:
-            forecast_df = get_forecast(lat, lon)
-            if not forecast_df.empty:
-                st.subheader(f"📅 التوقعات الجوية لـ 5 أيام في مدينة {validated_city}")
-                st.dataframe(forecast_df)
-                st.download_button("📥 تحميل CSV", forecast_df.to_csv(index=False), "5_day_forecast.csv", "text/csv")
-            else:
-                st.error("⚠️ لم يتم العثور على توقعات للمدينة.")
+        forecast_df = get_forecast(city_name)
+        if forecast_df is not None and not forecast_df.empty:
+            st.subheader(f"📅 التوقعات الجوية لـ 5 أيام في مدينة {forecast_df['City'][0]}")
+            st.dataframe(forecast_df)
+            st.download_button("📥 تحميل CSV", forecast_df.to_csv(index=False), "5_day_forecast.csv", "text/csv")
         else:
-            st.error("❌ لا توجد مدينة بهذا الاسم. حاول مرة أخرى.")
+            st.error("❌ لا توجد مدينة بهذا الاسم أو فشل في جلب التوقعات.")
 
 st.markdown("---")
 st.subheader("📚 إدارة البيانات")
